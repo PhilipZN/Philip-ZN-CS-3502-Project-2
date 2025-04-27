@@ -50,6 +50,8 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.cpuSchedulerTab = new System.Windows.Forms.TabPage();
             this.btnRoundRobin = new System.Windows.Forms.Button();
+            this.btnSRTF = new System.Windows.Forms.Button();
+            this.btnHRRN = new System.Windows.Forms.Button();
             this.restartApp = new System.Windows.Forms.Label();
             this.btnPriority = new System.Windows.Forms.Button();
             this.btnSJF = new System.Windows.Forms.Button();
@@ -62,7 +64,9 @@
             this.txtCodeInput = new System.Windows.Forms.TextBox();
             this.pictureBoxCodeOutput = new System.Windows.Forms.PictureBox();
             this.btnBarcode = new System.Windows.Forms.Button();
+            this.metricsTab = new System.Windows.Forms.TabPage();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.dgvMetrics = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabSelection.SuspendLayout();
@@ -73,6 +77,8 @@
             this.cpuSchedulerTab.SuspendLayout();
             this.productTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCodeOutput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMetrics)).BeginInit();
+            this.metricsTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -181,6 +187,7 @@
             this.tabSelection.Controls.Add(this.dashBoardTab);
             this.tabSelection.Controls.Add(this.cpuSchedulerTab);
             this.tabSelection.Controls.Add(this.productTab);
+            this.tabSelection.Controls.Add(this.metricsTab);
             this.tabSelection.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabSelection.Location = new System.Drawing.Point(171, 1);
             this.tabSelection.Name = "tabSelection";
@@ -314,6 +321,8 @@
             this.cpuSchedulerTab.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cpuSchedulerTab.BackgroundImage")));
             this.cpuSchedulerTab.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.cpuSchedulerTab.Controls.Add(this.btnRoundRobin);
+            this.cpuSchedulerTab.Controls.Add(this.btnSRTF);
+            this.cpuSchedulerTab.Controls.Add(this.btnHRRN);
             this.cpuSchedulerTab.Controls.Add(this.restartApp);
             this.cpuSchedulerTab.Controls.Add(this.btnPriority);
             this.cpuSchedulerTab.Controls.Add(this.btnSJF);
@@ -346,6 +355,32 @@
             this.btnRoundRobin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRoundRobin.UseVisualStyleBackColor = false;
             this.btnRoundRobin.Click += new System.EventHandler(this.btnRoundRobin_Click);
+            // 
+            // btnSRTF
+            // 
+            this.btnSRTF.BackColor = System.Drawing.Color.Lavender;
+            this.btnSRTF.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSRTF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSRTF.Location = new System.Drawing.Point(16, 340);
+            this.btnSRTF.Name = "btnSRTF";
+            this.btnSRTF.Size = new System.Drawing.Size(84, 45);
+            this.btnSRTF.TabIndex = 12;
+            this.btnSRTF.Text = "SRTF";
+            this.btnSRTF.UseVisualStyleBackColor = false;
+            this.btnSRTF.Click += new System.EventHandler(this.btnSRTF_Click);
+            // 
+            // btnHRRN
+            // 
+            this.btnHRRN.BackColor = System.Drawing.Color.LightCyan;
+            this.btnHRRN.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnHRRN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHRRN.Location = new System.Drawing.Point(115, 340);
+            this.btnHRRN.Name = "btnHRRN";
+            this.btnHRRN.Size = new System.Drawing.Size(117, 45);
+            this.btnHRRN.TabIndex = 13;
+            this.btnHRRN.Text = "HRRN";
+            this.btnHRRN.UseVisualStyleBackColor = false;
+            this.btnHRRN.Click += new System.EventHandler(this.btnHRRN_Click);
             // 
             // restartApp
             // 
@@ -517,9 +552,36 @@
             this.btnBarcode.UseVisualStyleBackColor = false;
             this.btnBarcode.Click += new System.EventHandler(this.btnBarcode_Click);
             // 
+            // metricsTab
+            // 
+            this.metricsTab.Location = new System.Drawing.Point(4, 22);
+            this.metricsTab.Name = "metricsTab";
+            this.metricsTab.Padding = new System.Windows.Forms.Padding(3);
+            this.metricsTab.Size = new System.Drawing.Size(501, 413);
+            this.metricsTab.TabIndex = 3;
+            this.metricsTab.Text = "Metrics";
+            this.metricsTab.UseVisualStyleBackColor = true;
+            this.metricsTab.Controls.Add(this.dgvMetrics);
+            // 
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // dgvMetrics
+            // 
+            this.dgvMetrics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvMetrics.Location = new System.Drawing.Point(0, 0);
+            this.dgvMetrics.Name = "dgvMetrics";
+            this.dgvMetrics.Size = new System.Drawing.Size(0, 0);
+            this.dgvMetrics.TabIndex = 10;
+            this.dgvMetrics.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvMetrics.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvMetrics.Columns.Add("AlgorithmName", "Algorithm");
+            this.dgvMetrics.Columns.Add("AvgWaiting", "Avg Waiting");
+            this.dgvMetrics.Columns.Add("AvgTurnaround", "Avg Turnaround");
+            this.dgvMetrics.Columns.Add("CPUUtilization", "CPU Utilization");
+            this.dgvMetrics.Columns.Add("Throughput", "Throughput");
+            this.dgvMetrics.Columns.Add("AvgResponseTime", "Avg Response");
             // 
             // CpuScheduler
             // 
@@ -548,6 +610,8 @@
             this.productTab.ResumeLayout(false);
             this.productTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCodeOutput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMetrics)).EndInit();
+            this.metricsTab.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -585,7 +649,11 @@
         private System.Windows.Forms.ProgressBar progressBar2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnRoundRobin;
+        private System.Windows.Forms.Button btnSRTF;
+        private System.Windows.Forms.Button btnHRRN;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.DataGridView dgvMetrics;
+        private System.Windows.Forms.TabPage metricsTab;
     }
 }

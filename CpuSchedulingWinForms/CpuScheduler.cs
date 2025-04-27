@@ -38,6 +38,8 @@ namespace CpuSchedulingWinForms
             this.tabSelection.SelectTab(1);
             this.sidePanel.Height = btnCpuScheduler.Height;
             this.sidePanel.Top = btnCpuScheduler.Top;
+            // clear previous metrics
+            dgvMetrics.Rows.Clear();
 
             //this.btnProductCode.BackColor = Color.Transparent;         
             //this.btnDashBoard.BackColor = Color.Transparent;
@@ -342,6 +344,17 @@ namespace CpuSchedulingWinForms
                 txtProcess.Focus();
             }
         }
+        private void btnSRTF_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtProcess.Text))
+                Algorithms.srtfAlgorithm(txtProcess.Text);
+        }
+
+        private void btnHRRN_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtProcess.Text))
+                Algorithms.hrrnAlgorithm(txtProcess.Text);
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -358,6 +371,27 @@ namespace CpuSchedulingWinForms
         private void txtCodeInput_Click(object sender, EventArgs e)
         {
             this.txtCodeInput.Clear();
+        }
+
+        // Adds a row to the metrics table
+        public void AddMetricRow(
+            string algorithmName,
+            double avgWaiting,
+            double avgTurnaround,
+            double cpuUtilization,
+            double throughput,
+            double? avgResponseTime)
+        {
+            int idx = dgvMetrics.Rows.Add();
+            var row = dgvMetrics.Rows[idx];
+            row.Cells["AlgorithmName"].Value   = algorithmName;
+            row.Cells["AvgWaiting"].Value      = avgWaiting.ToString("F2");
+            row.Cells["AvgTurnaround"].Value   = avgTurnaround.ToString("F2");
+            row.Cells["CPUUtilization"].Value  = cpuUtilization.ToString("F2") + "%";
+            row.Cells["Throughput"].Value      = throughput.ToString("F2");
+            row.Cells["AvgResponseTime"].Value = avgResponseTime.HasValue
+                ? avgResponseTime.Value.ToString("F2")
+                : "-";
         }
     }
 }
