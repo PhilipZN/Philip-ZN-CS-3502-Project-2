@@ -1,6 +1,6 @@
 # CPU Scheduling Simulator
 
-This project is a CPU Scheduling Simulator developed for an Operating Systems course (CS 3502).  
+This project is a CPU Scheduling Simulator developed for OwlTech.  
 It is a Windows Forms Application (.NET Framework) that visually demonstrates how various CPU scheduling algorithms perform under different workloads.
 
 ---
