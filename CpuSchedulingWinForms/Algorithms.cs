@@ -7,12 +7,25 @@ using System.Windows.Forms;
 
 namespace CpuSchedulingWinForms
 {
+    // class for Gantt chart entries
+    public class GanttEntry
+    {
+        public int ProcessId { get; set; }
+        public double StartTime { get; set; }
+        public double Duration { get; set; }
+        public GanttEntry(int pid, double start, double dur)
+        {
+            ProcessId = pid; StartTime = start; Duration = dur;
+        }
+    }
+
     public static class Algorithms
     {
         // ======================= FCFS ==========================
         public static void fcfsAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
+            var ganttEntries = new List<GanttEntry>();
 
             // no confirmation dialog, always run scheduling
 
@@ -61,19 +74,22 @@ namespace CpuSchedulingWinForms
                     MessageBoxButtons.OK,
                     MessageBoxIcon.None);
                 // mark done and advance
+                double start = currentTime;
+                ganttEntries.Add(new GanttEntry(idx + 1, start, burstTimes[idx]));
                 done[idx] = true;
                 completed++;
                 currentTime += burstTimes[idx];
             }
 
             double makespan = currentTime;
-            ShowMetrics("FCFS", waitingTimes, originalBursts, makespan, responseTimes);
+            ShowMetrics("FCFS", waitingTimes, originalBursts, makespan, responseTimes, ganttEntries);
         }
 
         // ======================= SJF ==========================
         public static void sjfAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
+            var ganttEntries = new List<GanttEntry>();
 
             // no confirmation dialog, always run scheduling
 
@@ -125,19 +141,22 @@ namespace CpuSchedulingWinForms
                     MessageBoxIcon.None);
 
                 // mark done and advance time
+                double start = currentTime;
+                ganttEntries.Add(new GanttEntry(idx + 1, start, burstTimes[idx]));
                 done[idx] = true;
                 completed++;
                 currentTime += burstTimes[idx];
             }
 
             double makespan = currentTime;
-            ShowMetrics("SJF", waitingTimes, originalBursts, makespan, responseTimes);
+            ShowMetrics("SJF", waitingTimes, originalBursts, makespan, responseTimes, ganttEntries);
         }
 
         // ======================= PRIORITY =======================
         public static void priorityAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
+            var ganttEntries = new List<GanttEntry>();
 
             // no confirmation dialog, always run scheduling
 
@@ -202,6 +221,8 @@ namespace CpuSchedulingWinForms
                     MessageBoxIcon.None);
 
                 // mark complete and advance time
+                double start = currentTime;
+                ganttEntries.Add(new GanttEntry(idx + 1, start, burstTimes[idx]));
                 done[idx] = true;
                 completed++;
                 currentTime += burstTimes[idx];
@@ -213,13 +234,15 @@ namespace CpuSchedulingWinForms
                 waitingTimes,
                 originalBursts,
                 makespan,
-                responseTimes: null);
+                responseTimes: null,
+                ganttEntries);
         }
 
         // ======================= ROUND ROBIN =======================
         public static void roundRobinAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
+            var ganttEntries = new List<GanttEntry>();
             int i, counter = 0, remaining;
             double total = 0.0, timeQuantum;
             double waitTime = 0, turnaroundTime = 0;
@@ -256,35 +279,30 @@ namespace CpuSchedulingWinForms
             // execute round robin
             for (total = 0, i = 0; remaining > 0; )
             {
-                if (temp[i] <= timeQuantum && temp[i] > 0)
+                if (temp[i] > 0)
                 {
-                    total += temp[i];
-                    temp[i] = 0;
-                    counter = 1;
-                }
-                else if (temp[i] > 0)
-                {
-                    temp[i] -= timeQuantum;
-                    total += timeQuantum;
-                }
+                    double slice = Math.Min(temp[i], timeQuantum);
+                    ganttEntries.Add(new GanttEntry(i + 1, total, slice));
+                    temp[i] -= slice;
+                    total += slice;
 
-                if (temp[i] == 0 && counter == 1)
-                {
-                    remaining--;
-                    double tat = total - arrivalTime[i];
-                    double wt  = tat - burstTime[i];
-                    MessageBox.Show(
-                        "Turnaround time for P" + (i + 1) + " : " + tat,
-                        "Turnaround time for P" + (i + 1),
-                        MessageBoxButtons.OK);
-                    MessageBox.Show(
-                        "Wait time for P" + (i + 1) + " : " + wt,
-                        "Wait time for P" + (i + 1),
-                        MessageBoxButtons.OK);
-                    turnaroundTime += tat;
-                    waitTime       += wt;
-                    waitingTimes[i] = (int)wt;
-                    counter = 0;
+                    if (temp[i] == 0)
+                    {
+                        remaining--;
+                        double tat = total - arrivalTime[i];
+                        double wt  = tat - burstTime[i];
+                        MessageBox.Show(
+                            "Turnaround time for P" + (i + 1) + " : " + tat,
+                            "Turnaround time for P" + (i + 1),
+                            MessageBoxButtons.OK);
+                        MessageBox.Show(
+                            "Wait time for P" + (i + 1) + " : " + wt,
+                            "Wait time for P" + (i + 1),
+                            MessageBoxButtons.OK);
+                        turnaroundTime += tat;
+                        waitTime       += wt;
+                        waitingTimes[i] = (int)wt;
+                    }
                 }
 
                 if (i == np - 1) i = 0;
@@ -307,13 +325,14 @@ namespace CpuSchedulingWinForms
             double makespan = total;
 
             // show performance metrics
-            ShowMetrics("Round Robin", waitingTimes, originalBursts, makespan, responseTimes);
+            ShowMetrics("Round Robin", waitingTimes, originalBursts, makespan, responseTimes, ganttEntries);
         }
 
         // ========================== SRTF ==========================
         public static void srtfAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
+            var ganttEntries = new List<GanttEntry>();
             double[] arrival   = new double[np];
             double[] burst     = new double[np];
             double[] remaining = new double[np];
@@ -355,6 +374,7 @@ namespace CpuSchedulingWinForms
                     continue;
                 }
 
+                ganttEntries.Add(new GanttEntry(idx + 1, time, 1));
                 remaining[idx]--;
                 time++;
                 if (remaining[idx] == 0)
@@ -386,13 +406,14 @@ namespace CpuSchedulingWinForms
             double makespan = time;
 
             // show performance metrics
-            ShowMetrics("SRTF", waitingTimes, originalBursts, makespan, responseTimes);
+            ShowMetrics("SRTF", waitingTimes, originalBursts, makespan, responseTimes, ganttEntries);
         }
 
         // ========================== HRRN ==========================
         public static void hrrnAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
+            var ganttEntries = new List<GanttEntry>();
             double[] arrival = new double[np];
             double[] burst   = new double[np];
             double[] waitArr = new double[np];
@@ -440,6 +461,7 @@ namespace CpuSchedulingWinForms
                 double wt = time - arrival[idx];
                 totalWT  += wt;
                 waitArr[idx] = wt;
+                ganttEntries.Add(new GanttEntry(idx + 1, time, burst[idx]));
                 time     += burst[idx];
                 done[idx]   = true;
                 completed++;
@@ -465,7 +487,7 @@ namespace CpuSchedulingWinForms
             double makespan = time;
 
             // show performance metrics
-            ShowMetrics("HRRN", waitingTimes, originalBursts, makespan, responseTimes);
+            ShowMetrics("HRRN", waitingTimes, originalBursts, makespan, responseTimes, ganttEntries);
         }
 
         // ====================== METRICS HELPER ======================
@@ -474,7 +496,8 @@ namespace CpuSchedulingWinForms
             int[] waitingTimes,
             int[] burstTimes,
             double makespan,
-            int[] responseTimes = null)
+            int[] responseTimes = null,
+            List<GanttEntry> ganttEntries = null)
         {
             int n = waitingTimes.Length;
             double totalWaiting    = waitingTimes.Sum();
@@ -507,6 +530,9 @@ namespace CpuSchedulingWinForms
             {
                 mainForm.AddMetricRow(algorithmName, avgWaiting, avgTurnaround, cpuUtilization, throughput, responseTimes != null ? (double?)responseTimes.Sum() / n : null);
             }
+
+            if (ganttEntries != null && mainForm != null)
+                mainForm.DrawGanttChart(algorithmName, ganttEntries);
         }
 
         // ----------------------- Input Helpers -----------------------

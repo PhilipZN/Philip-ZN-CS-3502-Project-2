@@ -15,9 +15,15 @@ namespace CpuSchedulingWinForms
 {
     public partial class CpuScheduler : Form
     {
+        // for manual Gantt drawing
+        private List<GanttEntry> currentGanttEntries = new List<GanttEntry>();
+        private double maxGanttTime = 0;
+
         public CpuScheduler()
         {
             InitializeComponent();
+            // attach paint handler
+            this.panelGantt.Paint += panelGantt_Paint;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -392,6 +398,51 @@ namespace CpuSchedulingWinForms
             row.Cells["AvgResponseTime"].Value = avgResponseTime.HasValue
                 ? avgResponseTime.Value.ToString("F2")
                 : "-";
+            // switch to metrics tab to display results
+            this.tabSelection.SelectTab(this.metricsTab);
+        }
+
+        // Renders the Gantt chart in the metrics tab
+        public void DrawGanttChart(string algorithmName, List<GanttEntry> entries)
+        {
+            // store entries and compute max time
+            currentGanttEntries = entries;
+            maxGanttTime = entries.Max(en => en.StartTime + en.Duration);
+            // trigger redraw
+            panelGantt.Invalidate();
+            panelGantt.Refresh();
+        }
+
+        // Paint handler for panelGantt: draws Gantt bars
+        private void panelGantt_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.Clear(panelGantt.BackColor);
+            if (currentGanttEntries == null || currentGanttEntries.Count == 0) return;
+            int procCount = currentGanttEntries.Max(en => en.ProcessId);
+            int rowHeight = panelGantt.Height / procCount;
+            float scale = (float)(panelGantt.Width / maxGanttTime);
+            var brush = Brushes.SteelBlue;
+            var pen = Pens.Black;
+            // draw each entry
+            foreach (var entry in currentGanttEntries)
+            {
+                int y = (entry.ProcessId - 1) * rowHeight;
+                float x = (float)(entry.StartTime * scale);
+                float w = (float)(entry.Duration * scale);
+                var rect = new RectangleF(x, y + 2, w, rowHeight - 4);
+                g.FillRectangle(brush, rect);
+                g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
+                // process label
+                g.DrawString("P" + entry.ProcessId, Font, Brushes.White, rect.X + 2, rect.Y + 2);
+            }
+            // draw time scale
+            for (int t = 0; t <= maxGanttTime; t++)
+            {
+                float xt = t * scale;
+                g.DrawLine(Pens.Gray, xt, 0, xt, panelGantt.Height);
+                g.DrawString(t.ToString(), Font, Brushes.Black, xt, panelGantt.Height - 15);
+            }
         }
     }
 }

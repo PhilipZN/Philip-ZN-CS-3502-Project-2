@@ -1,4 +1,6 @@
-﻿namespace CpuSchedulingWinForms
+﻿using System.Windows.Forms;
+
+namespace CpuSchedulingWinForms
 {
     partial class CpuScheduler
     {
@@ -67,6 +69,7 @@
             this.metricsTab = new System.Windows.Forms.TabPage();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.dgvMetrics = new System.Windows.Forms.DataGridView();
+            this.panelGantt = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabSelection.SuspendLayout();
@@ -554,6 +557,8 @@
             // 
             // metricsTab
             // 
+            this.metricsTab.Controls.Add(this.panelGantt);
+            this.metricsTab.Controls.Add(this.dgvMetrics);
             this.metricsTab.Location = new System.Drawing.Point(4, 22);
             this.metricsTab.Name = "metricsTab";
             this.metricsTab.Padding = new System.Windows.Forms.Padding(3);
@@ -561,7 +566,6 @@
             this.metricsTab.TabIndex = 3;
             this.metricsTab.Text = "Metrics";
             this.metricsTab.UseVisualStyleBackColor = true;
-            this.metricsTab.Controls.Add(this.dgvMetrics);
             // 
             // timer1
             // 
@@ -569,10 +573,10 @@
             // 
             // dgvMetrics
             // 
-            this.dgvMetrics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvMetrics.Dock = System.Windows.Forms.DockStyle.Top;
             this.dgvMetrics.Location = new System.Drawing.Point(0, 0);
             this.dgvMetrics.Name = "dgvMetrics";
-            this.dgvMetrics.Size = new System.Drawing.Size(0, 0);
+            this.dgvMetrics.Size = new System.Drawing.Size(501, 200);
             this.dgvMetrics.TabIndex = 10;
             this.dgvMetrics.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvMetrics.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -582,6 +586,16 @@
             this.dgvMetrics.Columns.Add("CPUUtilization", "CPU Utilization");
             this.dgvMetrics.Columns.Add("Throughput", "Throughput");
             this.dgvMetrics.Columns.Add("AvgResponseTime", "Avg Response");
+            // 
+            // panelGantt
+            // 
+            this.panelGantt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelGantt.BackColor = System.Drawing.SystemColors.Window;
+            this.panelGantt.Location = new System.Drawing.Point(0, 200);
+            this.panelGantt.Name = "panelGantt";
+            this.panelGantt.Size = new System.Drawing.Size(501, 213);
+            this.panelGantt.TabIndex = 11;
+            this.panelGantt.Paint += new System.Windows.Forms.PaintEventHandler(this.panelGantt_Paint);
             // 
             // CpuScheduler
             // 
@@ -655,5 +669,6 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.DataGridView dgvMetrics;
         private System.Windows.Forms.TabPage metricsTab;
+        private System.Windows.Forms.Panel panelGantt;
     }
 }
