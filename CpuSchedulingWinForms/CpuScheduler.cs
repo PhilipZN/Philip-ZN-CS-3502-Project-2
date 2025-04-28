@@ -419,30 +419,49 @@ namespace CpuSchedulingWinForms
             var g = e.Graphics;
             g.Clear(panelGantt.BackColor);
             if (currentGanttEntries == null || currentGanttEntries.Count == 0) return;
+
+            // define margins for axis labels
+            int marginLeft = 50, marginTop = 20, marginRight = 20, marginBottom = 40;
+            float availableWidth = panelGantt.Width - marginLeft - marginRight;
+            float availableHeight = panelGantt.Height - marginTop - marginBottom;
+
             int procCount = currentGanttEntries.Max(en => en.ProcessId);
-            int rowHeight = panelGantt.Height / procCount;
-            float scale = (float)(panelGantt.Width / maxGanttTime);
+            float rowHeight = availableHeight / procCount;
+            float scale = availableWidth / (float)maxGanttTime;
+
             var brush = Brushes.SteelBlue;
             var pen = Pens.Black;
-            // draw each entry
+            // draw each Gantt entry
             foreach (var entry in currentGanttEntries)
             {
-                int y = (entry.ProcessId - 1) * rowHeight;
-                float x = (float)(entry.StartTime * scale);
+                float x = marginLeft + (float)(entry.StartTime * scale);
+                float y = marginTop + (entry.ProcessId - 1) * rowHeight;
                 float w = (float)(entry.Duration * scale);
                 var rect = new RectangleF(x, y + 2, w, rowHeight - 4);
                 g.FillRectangle(brush, rect);
                 g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
-                // process label
                 g.DrawString("P" + entry.ProcessId, Font, Brushes.White, rect.X + 2, rect.Y + 2);
             }
-            // draw time scale
+            // draw time grid and ticks
             for (int t = 0; t <= maxGanttTime; t++)
             {
-                float xt = t * scale;
-                g.DrawLine(Pens.Gray, xt, 0, xt, panelGantt.Height);
-                g.DrawString(t.ToString(), Font, Brushes.Black, xt, panelGantt.Height - 15);
+                float xt = marginLeft + t * scale;
+                g.DrawLine(Pens.Gray, xt, marginTop, xt, marginTop + availableHeight);
+                g.DrawString(t.ToString(), Font, Brushes.Black, xt, marginTop + availableHeight + 2);
             }
+            // draw axes lines
+            g.DrawLine(pen, marginLeft, marginTop, marginLeft, marginTop + availableHeight);
+            g.DrawLine(pen, marginLeft, marginTop + availableHeight, marginLeft + availableWidth, marginTop + availableHeight);
+            // draw axis labels
+            var sf = new StringFormat { Alignment = StringAlignment.Center };
+            // x-axis label
+            g.DrawString("Time", Font, Brushes.Black, marginLeft + availableWidth / 2, marginTop + availableHeight + 20, sf);
+            // y-axis label (rotated)
+            var oldTransform = g.Transform;
+            g.TranslateTransform(marginLeft - 30, marginTop + availableHeight / 2);
+            g.RotateTransform(-90);
+            g.DrawString("Process", Font, Brushes.Black, 0, 0, sf);
+            g.Transform = oldTransform;
         }
     }
 }
